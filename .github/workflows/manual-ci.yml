@@ -32,7 +32,7 @@ jobs:
         run: |
           mvp_timestamp=$(date -d "${{ secrets.MVP_TIME }}" +%s)
           current_timestamp=$(date +%s)
-          echo "Current time: "; wcho $current_timestamp
+          echo "Current time: "; echo $current_timestamp
           if [ $mvp_timestamp -gt $current_timestamp ]; then
             wait_time=$((mvp_timestamp - current_timestamp))
             echo "Waiting for MVP time: ${{ secrets.MVP_TIME }} (in $wait_time seconds)"
