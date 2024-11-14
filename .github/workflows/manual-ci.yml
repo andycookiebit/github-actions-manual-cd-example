@@ -30,8 +30,9 @@ jobs:
       - name: Wait for MVP Date and Time
         if: env.MVP_TIME_SET == 'true'
         run: |
-          mvp_timestamp=$(date -d "${{ env.MVP_TIME }}" +%s)
+          mvp_timestamp=$(date -d "${{ secrets.MVP_TIME }}" +%s)
           current_timestamp=$(date +%s)
+          echo "Current time: "; wcho $current_timestamp
           if [ $mvp_timestamp -gt $current_timestamp ]; then
             wait_time=$((mvp_timestamp - current_timestamp))
             echo "Waiting for MVP time: ${{ secrets.MVP_TIME }} (in $wait_time seconds)"
