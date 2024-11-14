@@ -2,6 +2,7 @@ name: Automated MVP and Pilot Deployment
 
 on:
   push: # Automatically trigger the workflow on push to the repository
+  workflow_dispatch:
 
 jobs:
   initial_echo:
