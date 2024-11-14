@@ -1,0 +1,68 @@
+name: Schedule MVP and Pilot Messages
+
+on:
+  workflow_dispatch:
+    inputs:
+      initial:
+        description: 'Start the initial job to print the current date and time'
+        required: true
+        default: 'Start'
+
+jobs:
+  initial_echo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Current Date and Time
+        run: echo "Current Date and Time: $(date)"
+
+  wait_for_mvp:
+    runs-on: ubuntu-latest
+    needs: initial_echo
+    if: github.event.inputs.mvp_time != null
+    steps:
+      - name: Input MVP Date and Time
+        id: mvp_input
+        run: echo "Enter MVP time as a dispatch input to proceed."
+      - name: Wait for MVP Date and Time
+        id: wait_mvp
+        run: |
+          mvp_time="${{ github.event.inputs.mvp_time }}"
+          if [ -z "$mvp_time" ]; then
+            echo "No MVP time provided. Running MVP step immediately."
+          else
+            mvp_timestamp=$(date -d "$mvp_time" +%s)
+            current_timestamp=$(date +%s)
+            if [ $mvp_timestamp -gt $current_timestamp ]; then
+              wait_time=$((mvp_timestamp - current_timestamp))
+              echo "Waiting for MVP time: $mvp_time (in $wait_time seconds)"
+              sleep $wait_time
+            fi
+          fi
+      - name: Echo MVP Message
+        run: echo "MVP: $(date)"
+
+  wait_for_pilot:
+    runs-on: ubuntu-latest
+    needs: wait_for_mvp
+    if: github.event.inputs.pilot_time != null
+    steps:
+      - name: Input Pilot Date and Time
+        id: pilot_input
+        run: echo "Enter Pilot time as a dispatch input to proceed."
+      - name: Wait for Pilot Date and Time
+        id: wait_pilot
+        run: |
+          pilot_time="${{ github.event.inputs.pilot_time }}"
+          if [ -z "$pilot_time" ]; then
+            echo "No Pilot time provided. Running Pilot step immediately."
+          else
+            pilot_timestamp=$(date -d "$pilot_time" +%s)
+            current_timestamp=$(date +%s)
+            if [ $pilot_timestamp -gt $current_timestamp ]; then
+              wait_time=$((pilot_timestamp - current_timestamp))
+              echo "Waiting for Pilot time: $pilot_time (in $wait_time seconds)"
+              sleep $wait_time
+            fi
+          fi
+      - name: Echo Pilot Message
+        run: echo "Pilot: $(date)"
