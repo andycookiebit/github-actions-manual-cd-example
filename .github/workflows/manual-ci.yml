@@ -4,6 +4,12 @@ on:
   push: # Automatically trigger the workflow on push to the repository
   workflow_dispatch:
 
+
+env:
+  # Default times - can be replaced manually in the YAML file as needed
+  MVP_TIME: "2024-01-01 12:00"
+  PILOT_TIME: "2024-01-02 14:00"
+
 jobs:
   initial_echo:
     runs-on: ubuntu-latest
