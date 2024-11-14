@@ -3,7 +3,7 @@ name: Schedule MVP and Pilot Messages
 on:
   workflow_dispatch:
     inputs:
-      initial:
+      start:
         description: 'Start the initial job to print the current date and time'
         required: true
         default: 'Start'
@@ -19,12 +19,8 @@ jobs:
   wait_for_mvp:
     runs-on: ubuntu-latest
     needs: initial_echo
-    if: github.event.inputs.mvp_time != null
+    environment: mvp
     steps:
-      - name: Input MVP Date and Time
-        id: mvp_input
-        run: |
-          echo "Enter MVP time as a dispatch input to proceed."
       - name: Wait for MVP Date and Time
         id: wait_mvp
         run: |
@@ -47,12 +43,8 @@ jobs:
   wait_for_pilot:
     runs-on: ubuntu-latest
     needs: wait_for_mvp
-    if: github.event.inputs.pilot_time != null
+    environment: pilot
     steps:
-      - name: Input Pilot Date and Time
-        id: pilot_input
-        run: |
-          echo "Enter Pilot time as a dispatch input to proceed."
       - name: Wait for Pilot Date and Time
         id: wait_pilot
         run: |
