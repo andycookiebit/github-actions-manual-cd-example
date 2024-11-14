@@ -19,11 +19,11 @@ jobs:
     steps:
       - name: Check MVP Date and Time
         run: |
-          if [ -z "${{ env.MVP_TIME }}" ]; then
+          if [ -z "${{ secrets.MVP_TIME }}" ]; then
             echo "MVP_TIME not set. Running MVP step immediately."
             echo "MVP_TIME_SET=false" >> $GITHUB_ENV
           else
-            echo "MVP time set to: ${{ env.MVP_TIME }}"
+            echo "MVP time set to: ${{ secrets.MVP_TIME }}"
             echo "MVP_TIME_SET=true" >> $GITHUB_ENV
           fi
 
@@ -34,7 +34,7 @@ jobs:
           current_timestamp=$(date +%s)
           if [ $mvp_timestamp -gt $current_timestamp ]; then
             wait_time=$((mvp_timestamp - current_timestamp))
-            echo "Waiting for MVP time: ${{ env.MVP_TIME }} (in $wait_time seconds)"
+            echo "Waiting for MVP time: ${{ secrets.MVP_TIME }} (in $wait_time seconds)"
             sleep $wait_time
           fi
 
