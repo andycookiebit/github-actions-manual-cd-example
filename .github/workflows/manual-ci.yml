@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo Current Date and Time
-        run: echo "Current Date and Time: $(date)"
+        run: |
+          echo "Current Date and Time: $(date)"
 
   wait_for_mvp:
     runs-on: ubuntu-latest
@@ -22,7 +23,8 @@ jobs:
     steps:
       - name: Input MVP Date and Time
         id: mvp_input
-        run: echo "Enter MVP time as a dispatch input to proceed."
+        run: |
+          echo "Enter MVP time as a dispatch input to proceed."
       - name: Wait for MVP Date and Time
         id: wait_mvp
         run: |
@@ -39,7 +41,8 @@ jobs:
             fi
           fi
       - name: Echo MVP Message
-        run: echo "MVP: $(date)"
+        run: |
+          echo "MVP: $(date)"
 
   wait_for_pilot:
     runs-on: ubuntu-latest
@@ -48,7 +51,8 @@ jobs:
     steps:
       - name: Input Pilot Date and Time
         id: pilot_input
-        run: echo "Enter Pilot time as a dispatch input to proceed."
+        run: |
+          echo "Enter Pilot time as a dispatch input to proceed."
       - name: Wait for Pilot Date and Time
         id: wait_pilot
         run: |
@@ -65,4 +69,5 @@ jobs:
             fi
           fi
       - name: Echo Pilot Message
-        run: echo "Pilot: $(date)"
+        run: |
+          echo "Pilot: $(date)"
