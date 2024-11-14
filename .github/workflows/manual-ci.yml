@@ -1,12 +1,7 @@
 name: Schedule MVP and Pilot Messages
 
 on:
-  workflow_dispatch:
-    inputs:
-      start:
-        description: 'Start the initial job to print the current date and time'
-        required: true
-        default: 'Start'
+  workflow_dispatch: # This triggers the workflow manually
 
 jobs:
   initial_echo:
@@ -19,12 +14,18 @@ jobs:
   wait_for_mvp:
     runs-on: ubuntu-latest
     needs: initial_echo
-    environment: mvp
+    environment:
+      name: mvp
+      url: ${{ github.server_url }}/enter-your-mvp-time
     steps:
+      - name: Input MVP Date and Time
+        id: mvp_input
+        run: |
+          echo "Please enter the MVP time as an environment input when approving the job."
       - name: Wait for MVP Date and Time
         id: wait_mvp
         run: |
-          mvp_time="${{ github.event.inputs.mvp_time }}"
+          mvp_time="${{ secrets.MVP_TIME }}" # Use environment input set when approving
           if [ -z "$mvp_time" ]; then
             echo "No MVP time provided. Running MVP step immediately."
           else
@@ -43,12 +44,18 @@ jobs:
   wait_for_pilot:
     runs-on: ubuntu-latest
     needs: wait_for_mvp
-    environment: pilot
+    environment:
+      name: pilot
+      url: ${{ github.server_url }}/enter-your-pilot-time
     steps:
+      - name: Input Pilot Date and Time
+        id: pilot_input
+        run: |
+          echo "Please enter the Pilot time as an environment input when approving the job."
       - name: Wait for Pilot Date and Time
         id: wait_pilot
         run: |
-          pilot_time="${{ github.event.inputs.pilot_time }}"
+          pilot_time="${{ secrets.PILOT_TIME }}" # Use environment input set when approving
           if [ -z "$pilot_time" ]; then
             echo "No Pilot time provided. Running Pilot step immediately."
           else
