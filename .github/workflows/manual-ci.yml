@@ -1,7 +1,7 @@
-name: Schedule MVP and Pilot Messages
+name: Automated MVP and Pilot Deployment
 
 on:
-  workflow_dispatch: # This triggers the workflow manually
+  push: # Automatically trigger the workflow on push to the repository
 
 jobs:
   initial_echo:
@@ -14,59 +14,59 @@ jobs:
   wait_for_mvp:
     runs-on: ubuntu-latest
     needs: initial_echo
-    environment:
-      name: mvp
-      url: ${{ github.server_url }}/enter-your-mvp-time
+    environment: mvp
     steps:
-      - name: Input MVP Date and Time
-        id: mvp_input
+      - name: Check MVP Date and Time
         run: |
-          echo "Please enter the MVP time as an environment input when approving the job."
-      - name: Wait for MVP Date and Time
-        id: wait_mvp
-        run: |
-          mvp_time="${{ secrets.MVP_TIME }}" # Use environment input set when approving
-          if [ -z "$mvp_time" ]; then
-            echo "No MVP time provided. Running MVP step immediately."
+          if [ -z "${{ env.MVP_TIME }}" ]; then
+            echo "MVP_TIME not set. Running MVP step immediately."
+            echo "MVP_TIME_SET=false" >> $GITHUB_ENV
           else
-            mvp_timestamp=$(date -d "$mvp_time" +%s)
-            current_timestamp=$(date +%s)
-            if [ $mvp_timestamp -gt $current_timestamp ]; then
-              wait_time=$((mvp_timestamp - current_timestamp))
-              echo "Waiting for MVP time: $mvp_time (in $wait_time seconds)"
-              sleep $wait_time
-            fi
+            echo "MVP time set to: ${{ env.MVP_TIME }}"
+            echo "MVP_TIME_SET=true" >> $GITHUB_ENV
           fi
+
+      - name: Wait for MVP Date and Time
+        if: env.MVP_TIME_SET == 'true'
+        run: |
+          mvp_timestamp=$(date -d "${{ env.MVP_TIME }}" +%s)
+          current_timestamp=$(date +%s)
+          if [ $mvp_timestamp -gt $current_timestamp ]; then
+            wait_time=$((mvp_timestamp - current_timestamp))
+            echo "Waiting for MVP time: ${{ env.MVP_TIME }} (in $wait_time seconds)"
+            sleep $wait_time
+          fi
+
       - name: Echo MVP Message
         run: |
-          echo "MVP: $(date)"
+          echo "MVP Deployment Triggered at: $(date)"
 
   wait_for_pilot:
     runs-on: ubuntu-latest
     needs: wait_for_mvp
-    environment:
-      name: pilot
-      url: ${{ github.server_url }}/enter-your-pilot-time
+    environment: pilot
     steps:
-      - name: Input Pilot Date and Time
-        id: pilot_input
+      - name: Check Pilot Date and Time
         run: |
-          echo "Please enter the Pilot time as an environment input when approving the job."
-      - name: Wait for Pilot Date and Time
-        id: wait_pilot
-        run: |
-          pilot_time="${{ secrets.PILOT_TIME }}" # Use environment input set when approving
-          if [ -z "$pilot_time" ]; then
-            echo "No Pilot time provided. Running Pilot step immediately."
+          if [ -z "${{ env.PILOT_TIME }}" ]; then
+            echo "PILOT_TIME not set. Running Pilot step immediately."
+            echo "PILOT_TIME_SET=false" >> $GITHUB_ENV
           else
-            pilot_timestamp=$(date -d "$pilot_time" +%s)
-            current_timestamp=$(date +%s)
-            if [ $pilot_timestamp -gt $current_timestamp ]; then
-              wait_time=$((pilot_timestamp - current_timestamp))
-              echo "Waiting for Pilot time: $pilot_time (in $wait_time seconds)"
-              sleep $wait_time
-            fi
+            echo "Pilot time set to: ${{ env.PILOT_TIME }}"
+            echo "PILOT_TIME_SET=true" >> $GITHUB_ENV
           fi
+
+      - name: Wait for Pilot Date and Time
+        if: env.PILOT_TIME_SET == 'true'
+        run: |
+          pilot_timestamp=$(date -d "${{ env.PILOT_TIME }}" +%s)
+          current_timestamp=$(date +%s)
+          if [ $pilot_timestamp -gt $current_timestamp ]; then
+            wait_time=$((pilot_timestamp - current_timestamp))
+            echo "Waiting for Pilot time: ${{ env.PILOT_TIME }} (in $wait_time seconds)"
+            sleep $wait_time
+          fi
+
       - name: Echo Pilot Message
         run: |
-          echo "Pilot: $(date)"
+          echo "Pilot Deployment Triggered at: $(date)"
